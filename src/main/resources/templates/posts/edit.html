@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Post</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/footerCss.css">
+</head>
+<body>
+<div class="flex-wrapper">
+    <div th:insert="~{fragments/header :: header}"></div>
+    <div class="content-wrap">
+        <div class="container mt-5">
+            <h2>게시물 수정</h2>
+            <form th:action="@{/temp/{id}/edit(id=${post.postId})}" th:object="${post}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="postTitle">제목</label>
+                    <input type="text" id="postTitle" th:field="*{postTitle}" class="form-control" placeholder="Title" required>
+                </div>
+                <div class="form-group">
+                    <label for="postContent">본문</label>
+                    <textarea id="postContent" th:field="*{postContent}" rows="5" class="form-control" placeholder="Content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="photos">Photo Upload</label>
+                    <input type="file" id="photos" name="photos" multiple="true" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">수정</button>
+                <a th:href="@{/temp}" class="btn btn-secondary">취소</a>
+            </form>
+        </div>
+    </div>
+    <div th:insert="~{fragments/footer :: footer}"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

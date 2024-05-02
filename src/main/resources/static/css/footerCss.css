@@ -1,0 +1,12 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+.flex-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.content-wrap {
+    flex: 1;
+}

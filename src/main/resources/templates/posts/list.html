@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Posts</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <style>
+        .form-group {
+            display: flex;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/footerCss.css">
+</head>
+<body>
+<div class="flex-wrapper">
+
+    <div th:insert="~{fragments/header :: header}"></div>
+    <div class="content-wrap">
+
+        <div class="container mt-5">
+            <h2>블로그 게시물</h2>
+
+            <form action="/temp" method="get" class="form-inline my-2 my-lg-0">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="검색어를 입력하세요" aria-label="Search" name="keyword">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">검색</button>
+                    </div>
+                </div>
+            </form>
+
+
+            <div>
+                <!-- Create Post 버튼의 링크를 새 게시글 작성 경로로 변경 -->
+                <a th:href="@{/temp/new}" class="btn btn-primary">게시물 작성</a>
+            </div>
+            <div class="mt-3">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- post.id 대신 post.postId를 사용하여 게시글의 식별자를 올바르게 참조 -->
+                    <tr th:each="post : ${posts}">
+                        <td th:text="${post.postId}"></td>
+                        <td><a th:href="@{'/temp/' + ${post.postId}}" th:text="${post.postTitle}">Title</a></td>
+                        <td th:text="${post.postAuthor?.username}">Author</td>
+                        <td th:text="${#temporals.format(post.postCreatedAt, 'yyyy-MM-dd HH:mm')}">Date</td>
+                        <td>
+                            <!-- 현재 사용자가 게시물 작성자와 동일한 경우에만 수정 및 삭제 링크 표시 -->
+                            <div th:if="${post.postAuthor?.username == currentUsername}">
+                                <a th:href="@{'/temp/' + ${post.postId} + '/edit'}" class="btn btn-secondary btn-sm">수정</a>
+                                <a th:href="@{'/temp/' + ${post.postId} + '/delete'}" class="btn btn-danger btn-sm">삭제</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 페이징 링크 추가 -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/temp(page=${currentPage - 1})}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item"
+                        th:classappend="${i-1 == currentPage} ? 'active' : ''">
+                        <a class="page-link" th:href="@{/temp(page=${i-1})}" th:text="${i}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage + 1 == totalPages} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/temp(page=${currentPage + 1})}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <div th:insert="~{fragments/footer :: footer}"></div>
+</div>
+</body>
+</html>

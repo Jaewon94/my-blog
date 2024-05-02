@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/footerCss.css">
+</head>
+<body>
+<div class="flex-wrapper">
+
+    <div th:insert="~{fragments/header :: header}"></div>
+    <div class="content-wrap">
+
+        <div class="container mt-5">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <h2 class="mb-3">회원가입</h2>
+
+                    <!-- 오류 메시지 표시 -->
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                        <p th:text="${errorMessage}"></p>
+                    </div>
+
+                    <!-- 성공 메시지 표시 -->
+                    <div th:if="${message}" class="alert alert-success" role="alert">
+                        <p th:text="${message}"></p>
+                    </div>
+
+                    <form th:action="@{/register}" method="post" th:object="${blogUser}">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required placeholder="Enter username" th:value="*{username}">
+                        </div>
+                        <div class="form-group">
+                            <label for="passwordHash">Password</label>
+                            <input type="password" class="form-control" id="passwordHash" name="passwordHash" required placeholder="Enter password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required placeholder="Confirm your password">
+                        </div>
+                        <div class="form-group">
+                            <label for="userEmail">Email</label>
+                            <input type="email" class="form-control" id="userEmail" name="userEmail" required placeholder="Enter email" th:value="*{userEmail}">
+                        </div>
+                        <!-- 이메일 인증 알림 -->
+                        <div class="alert alert-info mt-4" role="alert">
+                            <h4 class="alert-heading">거의 다 왔어요!</h4>
+                            <p>가입 후, 이메일 주소를 인증하여 계정을 활성화해 주시기 바랍니다. 이메일을 확인해 주세요.</p>
+                            <hr>
+                            <p class="mb-0">이메일을 받지 못하셨나요? 스팸 폴더를 확인하거나 <a href="#" class="alert-link">다른 이메일을 요청하세요</a>.</p>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:insert="~{fragments/footer :: footer}"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update Your Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <style>
+        .profile-update-container {
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-picture-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center center;
+            border: 2px solid #dee2e6;
+            display: none; /* Hide initially */
+        }
+
+        .form-control, .btn-primary {
+            border-radius: 20px;
+        }
+        .profile-box{
+            display: flex;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/footerCss.css">
+</head>
+<body>
+<div class="flex-wrapper">
+
+    <div th:insert="~{fragments/header :: header}"></div>
+    <div class="content-wrap">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 profile-update-container">
+                    <h2 class="mb-4">프로필 수정</h2>
+                    <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data">
+                        <div class="profile-box">
+                            <div class="form-group">
+                                <label for="profilePicture">프로필 사진</label>
+                                <input type="file" class="form-control-file" id="profilePicture" name="profilePicture" onchange="previewProfilePicture(this);">
+                            </div>
+                            <div class="col-md-4 d-flex justify-content-center align-items-center">
+                                <div class="profile-picture-preview" id="profilePicturePreview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" th:value="${user.getUsername()}" name="name" id="name" class="form-control" placeholder="Enter your name" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" th:value="${user.getUserEmail()}" name="email" id="email" class="form-control" placeholder="Enter your email" readonly>
+                        </div>
+
+                        <!-- 프로필 사진 오류 메시지 표시 -->
+                        <div th:if="${error}" class="alert alert-danger mt-3" role="alert">
+                            <h4 class="alert-heading">업데이트 실패!</h4>
+                            <p th:text="${error}"></p>
+                            <hr>
+                            <p class="mb-0">다시 시도해 주세요</p>
+                        </div>
+                        <!-- 패스워드 불일치 오류 메시지 표시 -->
+                        <div th:if="${passwordError}" class="alert alert-danger mt-3" role="alert">
+                            <h4 class="alert-heading">업데이트 실패!</h4>
+                            <p th:text="${passwordError}"></p>
+                            <hr>
+                            <p class="mb-0">다시 시도해 주세요</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">프로필 수정</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:insert="~{fragments/footer :: footer}"></div>
+</div>
+
+<script>
+    // 프로필 사진 미리보기
+    function previewProfilePicture(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById('profilePicturePreview').style.backgroundImage = 'url(' + e.target.result + ')';
+                document.getElementById('profilePicturePreview').style.display = 'block';
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

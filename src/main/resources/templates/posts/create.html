@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Post</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/footerCss.css">
+
+</head>
+<body>
+<div class="flex-wrapper">
+    <div th:insert="~{fragments/header :: header}"></div>
+    <div class="content-wrap">
+
+        <div class="container mt-5">
+            <h2>게시물 작성</h2>
+            <!-- enctype attribute added here -->
+            <form id="postForm" th:action="@{/temp}" th:object="${post}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="postTitle">Title</label>
+                    <input type="text" id="postTitle" th:field="*{postTitle}" class="form-control" placeholder="Title" required>
+                </div>
+                <div class="form-group">
+                    <label for="postContent">Content</label>
+                    <textarea id="postContent" th:field="*{postContent}" rows="5" class="form-control" placeholder="Content" required></textarea>
+                </div>
+                <!-- File input field added here -->
+                <div class="form-group">
+                    <label for="postImages">Image</label>
+                    <input type="file" id="postImages" name="postImages" class="form-control-file" multiple>
+                </div>
+                <button type="submit" class="btn btn-success">Submit</button>
+                <a th:href="@{/temp}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+    <div th:insert="~{fragments/footer :: footer}"></div>
+</div>
+
+</body>
+</html>

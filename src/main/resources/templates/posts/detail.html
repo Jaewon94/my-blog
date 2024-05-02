@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Post Detail</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <style>
+        .comment-metadata {
+            font-size: 0.8rem;
+            color: #6c757d;
+            float: right; /* 날짜를 오른쪽으로 이동 */
+        }
+        .comment-actions {
+            margin-top: 10px;
+            float: right; /* 수정과 삭제 버튼을 오른쪽으로 이동 */
+        }
+        .comment-body {
+            margin-top: 10px;
+            font-size: 0.9rem; /* 댓글 내용 폰트 크기 줄임 */
+        }
+        .edit-comment, .delete-comment {
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .edit-comment:hover, .delete-comment:hover {
+            text-decoration: underline;
+        }
+        .post-content {
+            background-color: #fff; /* 배경색 */
+            border-radius: 8px; /* 테두리 둥글게 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 그림자 효과 */
+            padding: 20px; /* 안쪽 여백 */
+            margin-bottom: 20px; /* 아래쪽 마진 */
+        }
+
+        .post-title {
+            color: #007bff; /* 제목 색상 */
+            margin-bottom: 15px; /* 제목 아래 마진 */
+        }
+
+        .post-meta {
+            font-size: 0.9rem; /* 메타 정보 폰트 크기 */
+            color: #6c757d; /* 메타 정보 색상 */
+            margin-bottom: 20px; /* 메타 정보 아래 마진 */
+        }
+
+        .post-body {
+            font-size: 1rem; /* 본문 폰트 크기 */
+            line-height: 1.6; /* 줄간격 */
+            color: #212529; /* 본문 색상 */
+        }
+        .box {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/footerCss.css">
+
+</head>
+<body>
+<div class="flex-wrapper">
+
+    <div th:insert="~{fragments/header :: header}"></div>
+    <div class="content-wrap">
+
+        <div class="container mt-5">
+            <!-- Post content -->
+            <div class="post-content">
+                <h2 class="post-title" th:text="${post.postTitle}">Post Title</h2>
+                <p class="text-muted post-meta">Written by <span th:text="${post.postAuthor.username}">Author</span> on <span th:text="${#temporals.format(post.postCreatedAt, 'yyyy-MM-dd')}">Date</span></p>
+                <p class="post-body" th:text="${post.postContent}">Post content here...</p>
+
+                <!-- 이미지 출력 부분 -->
+                <div th:if="${!post.imagePaths.isEmpty()}">
+                    <div>
+                        <img th:each="imagePath : ${post.imagePaths}" th:src="${imagePath}" alt="Post Image" style="max-width: 100%; margin-bottom: 10px;"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments section -->
+            <div class="comments-section">
+                <h4>댓글 작성</h4>
+                <form th:action="@{/temp/{postId}/comments(postId=${post.postId})}" method="post">
+                    <textarea name="content" class="form-control mb-2" rows="4" placeholder="댓글을 이곳에 작성해 주세요"></textarea>
+                    <button type="submit" class="btn btn-primary">작성</button>
+                </form>
+                <h3>댓글</h3>
+                <!-- 댓글 리스트 반복 -->
+                <div th:each="comment : ${commentsPage.content}">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title comment-author" th:text="${comment.commentAuthor.username}">Username</h5>
+                            <div class="comment-actions box">
+                                <div th:if="${comment.commentAuthor.username == currentUsername}">
+                                    <span class="edit-comment" th:attr="data-comment-id=${comment.commentId}" onclick="editComment(this)">수정</span>
+                                    <span class="delete-comment" th:attr="data-comment-id=${comment.commentId}" onclick="deleteComment(this)">삭제</span>
+                                </div>
+                                <div sec:authorize="hasAuthority('ROLE_ADMIN')">
+                                    <!-- 'ROLE_ADMIN' 역할을 가진 사용자만 댓글 수정 및 삭제 버튼 보임 -->
+                                    <span class="delete-comment" th:attr="data-comment-id=${comment.commentId}" onclick="deleteComment(this)">삭제</span>
+                                </div>
+                                <small class="text-muted comment-metadata" th:text="${#temporals.format(comment.commentCreatedAt, 'yyyy-MM-dd HH:mm')}"></small>
+                            </div>
+
+
+                            <p class="card-text comment-body" th:text="${comment.commentContent}">Comment content</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 페이지네이션 컨트롤 -->
+                <div>
+                    <ul class="pagination">
+                        <li th:each="pageNum : ${pageNumbers}" class="page-item" th:classappend="${pageNum == commentsPage.number} ? 'active' : ''">
+                            <a th:href="@{/temp/{postId}(postId=${post.postId},page=${pageNum})}" class="page-link" th:text="${pageNum + 1}">1</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:insert="~{fragments/footer :: footer}"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // 댓글 수정 함수
+        function editComment(commentId, newContent) {
+            $.ajax({
+                url: '/temp/comments/' + commentId + '/edit',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ content: newContent }),
+                success: function(response) {
+                    // 성공 시 페이지 내용 갱신 또는 사용자에게 알림
+                    alert('댓글이 수정되었습니다.');
+                    location.reload(); // 간단한 예시로 페이지 새로고침
+                },
+                error: function(xhr, status, error) {
+                    alert('댓글 수정 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        // 댓글 삭제 함수
+        function deleteComment(commentId) {
+            $.ajax({
+                url: '/temp/comments/' + commentId + '/delete',
+                type: 'DELETE',
+                success: function(response) {
+                    // 성공 시 페이지 내용 갱신 또는 사용자에게 알림
+                    alert('댓글이 삭제되었습니다.');
+                    location.reload(); // 간단한 예시로 페이지 새로고침
+                },
+                error: function(xhr, status, error) {
+                    alert('댓글 삭제 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        // 수정 버튼 클릭 이벤트 처리
+        $('.edit-comment').click(function() {
+            var commentId = $(this).attr('data-comment-id');
+            var newContent = prompt('댓글 내용을 수정하세요:');
+            if (newContent) {
+                editComment(commentId, newContent);
+            }
+        });
+
+        // 삭제 버튼 클릭 이벤트 처리
+        $('.delete-comment').click(function() {
+            var commentId = $(this).attr('data-comment-id');
+            if (confirm('댓글을 삭제하시겠습니까?')) {
+                deleteComment(commentId);
+            }
+        });
+    });
+</script>
+</body>
+</html>
